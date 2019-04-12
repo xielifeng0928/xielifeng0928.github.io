@@ -1,0 +1,348 @@
+<html>
+	<head>
+		<title>详细计算您的纳费情况</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+		<SCRIPT LANGUAGE="JavaScript">
+			// 税率档次分布集合
+			var suidianSet = [0, 3, 10, 20, 25, 30, 35, 45];
+			
+			/**
+			 * 个税起征点自1980年确定为800元后历经了三次调整
+			 * 2006年提高到1600元
+			 * 2008年提高到2000元
+			 * 2011年提高到3500元
+			 * 2018年提高到5000元
+			 */
+			
+			/**
+			 * 函数功能：打印最后税费档次交税情况和总结信息
+			 * @param  	qidiane			起点额度
+			 * @param  	suiqiangongzi	税前工资
+			 * @param  	suie			纳税总额
+			 * @param  	shifagongzi		实发工作
+			 * @param  	chae			本档纳税金额度
+			 * @param  	level			纳税档次
+			 * @date    2018-09-01  星期六
+			 * @return  
+			 * @author  谢立峰
+			 * 特别说明： 
+			 */
+			function fillOtherInfo(qidiane, suiqiangongzi, suie, shifagongzi, chae, level){
+					document.agecalc.timealive.value += "第" + level + "档   " + qidiane + "~" + suiqiangongzi + " \t\t税率" + suidianSet[level] + "%  纳税" + chae + "元\n";
+					document.agecalc.timealive.value += "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
+					document.agecalc.timealive.value += "税前工资：" + suiqiangongzi + "元\n";
+					document.agecalc.timealive.value += "实发工资：" + shifagongzi + "元\n";
+					document.agecalc.timealive.value += "纳税总额：" + suie + "元\n";
+					document.agecalc.timealive.value += "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n\n";
+			}
+			
+			/**
+			 * 函数功能：根据纳税档次，打印税费档次的交税情况(2011版)
+			 * @param  	level			纳税档次
+			 * @date    2018-09-01  星期六
+			 * @return  
+			 * @author  谢立峰
+			 * 特别说明： 
+			 */
+			function fill2011(level){
+				document.agecalc.timealive.value += "根据2011年税费制度，您的纳税明细如下：\n";
+				document.agecalc.timealive.value += "第0档   0~3500 \t\t\t税率0%   纳税0元\n";
+				
+				if(level >= 1){
+					document.agecalc.timealive.value += "第1档   3500~4500 \t\t税率3%   纳税30元\n";
+				}
+				if(level >= 2){
+					document.agecalc.timealive.value += "第2档   4500~8000 \t\t税率10%  纳税350元\n";
+				}
+				if(level >= 3){
+					document.agecalc.timealive.value += "第3档   8000~12500 \t\t税率20%  纳税900元\n";
+				}
+				if(level >= 4){
+					document.agecalc.timealive.value += "第4档   12500~38500 \t\t税率25%  纳税6500元\n";
+				}
+				if(level >= 5){
+					document.agecalc.timealive.value += "第5档   38500~58500 \t\t税率30%  纳税6000元\n";
+				}
+				if(level >= 6){
+					document.agecalc.timealive.value += "第6档   58500~83500 \t\t税率35%  纳税8750元\n";
+				}
+			}
+			
+			/**
+			 * 函数功能：根据纳税档次，打印税费档次的交税情况(2018版)
+			 * @param  	level			纳税档次
+			 * @date    2018-09-01  星期六
+			 * @return  
+			 * @author  谢立峰
+			 * 特别说明： 
+			 */
+			function fill2018(level){
+				document.agecalc.timealive.value += "根据2018年税费制度，您的纳税明细如下：\n";
+				document.agecalc.timealive.value += "第0档   0~5000 \t\t\t税率0%   纳税0元\n";
+				
+				if(level >= 1){
+					document.agecalc.timealive.value += "第1档   5000~8000 \t\t税率3%   纳税90元\n";
+				}
+				if(level >= 2){
+					document.agecalc.timealive.value += "第2档   8000~17000 \t\t税率10%  纳税900元\n";
+				}
+				if(level >= 3){
+					document.agecalc.timealive.value += "第3档   17000~30000 \t\t税率20%  纳税2600元\n";
+				}
+				if(level >= 4){
+					document.agecalc.timealive.value += "第4档   30000~40000 \t\t税率25%  纳税2500元\n";
+				}
+				if(level >= 5){
+					document.agecalc.timealive.value += "第5档   40000~60000 \t\t税率30%  纳税6000元\n";
+				}
+				if(level >= 6){
+					document.agecalc.timealive.value += "第6档   60000~85000 \t\t税率35%  纳税8750元\n";
+				}
+			}
+			
+			/**
+			 * 函数功能：根据税前工资计算纳税情况
+			 * @param  	level			纳税档次
+			 * @date    2018-09-01  星期六
+			 * @return  
+			 * @author  谢立峰
+			 * 特别说明： 
+			 */
+			function runByGongzi() {
+				var suie;			//纳税总额
+				var chae;			//本档纳税金额度
+				var suiqiangongzi;	//税前工资
+				var shifagongzi;	//实发工作
+				var suie2011;		//旧制度纳税额
+				var suie2018;		//新制度纳税额
+				with (document.agecalc) {
+					suiqiangongzi = inputsuiqiangongzi.value;
+					if (isNaN(suiqiangongzi)) {
+						document.agecalc.timealive.value = "请输入数据值！";
+						document.agecalc.inputsuiqiangongzi.select();
+						document.agecalc.inputsuiqiangongzi.focus();
+						return;
+					}
+				}
+				
+				document.agecalc.timealive.value = "";
+				
+				// 工资档次起点分布集合(2011版)
+				var gongziLevelStartSet = [0, 3500, 4500, 8000, 12500, 38500, 58500, 83500];
+				// 累计税额(2011版)
+				var leijisuieSet = [0, 0, 30, 380, 1280, 7780, 13780, 22530];
+				
+				if(suiqiangongzi > gongziLevelStartSet[7]){//纳税档次 7
+					fill2011(6); //打印纳税档次之前的全部纳税信息
+					chae = (suiqiangongzi - gongziLevelStartSet[7]) * suidianSet[7] / 100;
+					suie = chae + leijisuieSet[7];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[7], suiqiangongzi, suie, shifagongzi, chae, 7);
+				} else if (suiqiangongzi > gongziLevelStartSet[6]){
+					fill2011(5);
+					chae = (suiqiangongzi-gongziLevelStartSet[6]) * suidianSet[6] / 100;
+					suie = chae + leijisuieSet[6];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[6], suiqiangongzi, suie, shifagongzi, chae, 6);
+				} else if (suiqiangongzi > gongziLevelStartSet[5]){
+					fill2011(4);
+					chae = (suiqiangongzi-gongziLevelStartSet[5]) * suidianSet[5] / 100;
+					suie = chae + leijisuieSet[5];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[5], suiqiangongzi, suie, shifagongzi, chae, 5);
+				} else if (suiqiangongzi > gongziLevelStartSet[4]){
+					fill2011(3);
+					chae = (suiqiangongzi-gongziLevelStartSet[4]) * suidianSet[4] / 100;
+					suie = chae + leijisuieSet[4];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[4], suiqiangongzi, suie, shifagongzi, chae, 4);
+				} else if (suiqiangongzi > gongziLevelStartSet[3]){
+					fill2011(2);
+					chae = (suiqiangongzi-gongziLevelStartSet[3]) * suidianSet[3] / 100;
+					suie = chae + leijisuieSet[3];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[3], suiqiangongzi, suie, shifagongzi, chae, 3);
+				} else if (suiqiangongzi > gongziLevelStartSet[2]){
+					fill2011(1);
+					chae = (suiqiangongzi-gongziLevelStartSet[2]) * suidianSet[2] / 100;
+					suie = chae + leijisuieSet[2];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[2], suiqiangongzi, suie, shifagongzi, chae, 2);
+				} else if (suiqiangongzi > gongziLevelStartSet[1]){
+					fill2011(0);
+					chae = (suiqiangongzi-gongziLevelStartSet[1]) * suidianSet[1] / 100;
+					suie = chae + 0;
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[1], suiqiangongzi, suie, shifagongzi, chae, 1);
+				} else {
+					suie = 0;
+					document.agecalc.timealive.value = "根据2011年税费制度，您的纳税明细如下：\n";
+					document.agecalc.timealive.value += "第0档   0~3500 \t\t\t税率0%   纳税0元\n";
+					
+					document.agecalc.timealive.value += "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
+					document.agecalc.timealive.value += "税前工资：" + suiqiangongzi + "\n";
+					document.agecalc.timealive.value += "实发工资：" + suiqiangongzi + "元\n";
+					document.agecalc.timealive.value += "纳税总额：0元\n";
+					document.agecalc.timealive.value += "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n\n";
+				}
+				suie2011 = suie;
+
+				// 工资档次起点分布集合(2018版)
+				gongziLevelStartSet = [0, 5000, 8000, 17000, 30000, 40000, 60000, 85000];
+				// 累计税额(2018版)
+				leijisuieSet = [0, 0, 90, 990, 3590, 6090, 12090, 20840];
+				
+				if(suiqiangongzi > gongziLevelStartSet[7]){//纳税档次 7
+					fill2018(6); //打印纳税档次之前的全部纳税信息
+					chae = (suiqiangongzi - gongziLevelStartSet[7]) * suidianSet[7] / 100;
+					suie = chae + leijisuieSet[7];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[7], suiqiangongzi, suie, shifagongzi, chae, 7);
+				} else if (suiqiangongzi > gongziLevelStartSet[6]){
+					fill2018(5);
+					chae = (suiqiangongzi-gongziLevelStartSet[6]) * suidianSet[6] / 100;
+					suie = chae + leijisuieSet[6];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[6], suiqiangongzi, suie, shifagongzi, chae, 6);
+				} else if (suiqiangongzi > gongziLevelStartSet[5]){
+					fill2018(4);
+					chae = (suiqiangongzi-gongziLevelStartSet[5]) * suidianSet[5] / 100;
+					suie = chae + leijisuieSet[5];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[5], suiqiangongzi, suie, shifagongzi, chae, 5);
+				} else if (suiqiangongzi > gongziLevelStartSet[4]){
+					fill2018(3);
+					chae = (suiqiangongzi-gongziLevelStartSet[4]) * suidianSet[4] / 100;
+					suie = chae + leijisuieSet[4];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[4], suiqiangongzi, suie, shifagongzi, chae, 4);
+				} else if (suiqiangongzi > gongziLevelStartSet[3]){
+					fill2018(2);
+					chae = (suiqiangongzi-gongziLevelStartSet[3]) * suidianSet[3] / 100;
+					suie = chae + leijisuieSet[3];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[3], suiqiangongzi, suie, shifagongzi, chae, 3);
+				} else if (suiqiangongzi > gongziLevelStartSet[2]){
+					fill2018(1);
+					chae = (suiqiangongzi-gongziLevelStartSet[2]) * suidianSet[2] / 100;
+					suie = chae + leijisuieSet[2];
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[2], suiqiangongzi, suie, shifagongzi, chae, 2);
+				} else if (suiqiangongzi > gongziLevelStartSet[1]){
+					fill2018(0);
+					chae = (suiqiangongzi-gongziLevelStartSet[1]) * suidianSet[1] / 100;
+					suie = chae + 0;
+					shifagongzi = suiqiangongzi - suie;
+					fillOtherInfo(gongziLevelStartSet[1], suiqiangongzi, suie, shifagongzi, chae, 1);
+				} else {
+					suie = 0;
+					document.agecalc.timealive.value += "根据2018年税费制度，您的纳税明细如下：\n";
+					document.agecalc.timealive.value += "第0档   0~5000 \t\t\t税率0%   纳税0元\n";
+					
+					document.agecalc.timealive.value += "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
+					document.agecalc.timealive.value += "税前工资：" + suiqiangongzi + "\n";
+					document.agecalc.timealive.value += "实发工资：" + suiqiangongzi + "元\n";
+					document.agecalc.timealive.value += "纳税总额：0元\n";
+					document.agecalc.timealive.value += "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n\n";
+				}
+				suie2018 = suie;
+				document.agecalc.timealive.value += "新税费制度为您节省税费：" + (suie2011-suie2018) + "元!!!\n";
+			}
+			
+			/**
+			 * 函数功能：初始化显示内容
+			 * @param  	
+			 * @date    2018-09-01  星期六
+			 * @return  
+			 * @author  谢立峰
+			 * 特别说明： 
+			 */
+			function init(){
+				document.agecalc.timealive.value = "个税起征点自1980年确定为800元,之后后历经了四次调整:\n";
+				document.agecalc.timealive.value += "    * 2006年提高到1600元\n";
+				document.agecalc.timealive.value += "    * 2008年提高到2000元\n";
+				document.agecalc.timealive.value += "    * 2011年提高到3500元\n";
+				document.agecalc.timealive.value += "    * 2018年提高到5000元\n\n";
+				
+				document.agecalc.timealive.value += "根据2018年税费制度，纳税明细如下\n";
+				document.agecalc.timealive.value += "第0档   0~5000 			税率0%   纳税0元\n";
+				document.agecalc.timealive.value += "第1档   5000~8000 		税率3%   纳税90元\n";
+				document.agecalc.timealive.value += "第2档   8000~17000 		税率10%  纳税900元\n";
+				document.agecalc.timealive.value += "第3档   17000~30000 		税率20%  纳税2600元\n";
+				document.agecalc.timealive.value += "第4档   30000~40000 		税率25%  纳税2500元\n";
+				document.agecalc.timealive.value += "第5档   40000~60000 		税率30%  纳税6000元\n";
+				document.agecalc.timealive.value += "第6档   60000~85000 		税率35%  纳税8750元\n";
+				document.agecalc.timealive.value += "第7档   85000~      		税率45%\n\n\n";
+				
+				document.agecalc.timealive.value += "                             @谢立峰 2018年09月01日";
+			}
+		</script>
+		<style>
+			body {
+				padding-top: 5px;
+			}
+			
+			#startBut, #snapshotBut, #resetBut {
+				font-size: 14px;
+				vertical-align: middle;
+				text-align: center;
+				font-weight: bold;
+				color: #0CC;
+			}
+		</style>
+	</head>
+
+	<body onload="javascript: init();">
+		<table border=5 bordercolor=#0CC borderlight=green>
+			<tr>
+				<td align=center>
+					<font size=5 color=red face="Arial, Helvetica, sans-serif"><strong>详细计算您的纳费情况</strong></font>
+				</td>
+			</tr>
+			<tr>
+				<td align=center>
+					<font size=4 color=red face="Arial, Helvetica, sans-serif"><strong>$$$$$$$$$$2018版$$$$$$$$$$</strong></font>
+				</td>
+			</tr>
+			<tr>
+				<td align=left>
+					<font size=3 color=green>
+						&nbsp;个税起征点自1980年确定为800元,之后历经了四次调整：<br>
+						&nbsp;&nbsp;&nbsp;* 2006年提高到1600元<br>
+						&nbsp;&nbsp;&nbsp;* 2008年提高到2000元<br>
+						&nbsp;&nbsp;&nbsp;* 2011年提高到3500元<br>
+						&nbsp;&nbsp;&nbsp;* 2018年提高到5000元<br>
+					</font>
+				</td>
+			</tr>
+			<tr>
+				<td align=center height=80 width=400>
+					<form name=agecalc>
+						<table >
+							<tr>
+								<td align=left>
+									<br>&nbsp;扣除五险一金、专项费后的纳税工资: 
+									<input type=text name=inputsuiqiangongzi size=12 value="0">
+									<input type=button id="startBut" value="开始计算" onclick="javascript: runByGongzi();">
+									<input type=button id="resetBut" value="重置" onclick="javascript: init();"><br><br>
+								</td>
+							</tr>
+							<tr>
+								<td align=left>
+									<textarea rows=30 cols=88 name=timealive style="background-color: #000000;color: 53FF53;">
+									</textarea>
+								</td>
+							</tr>
+						</table>
+					</form>
+				</td>
+			</tr>
+		
+			<tr>
+				<td>
+					<iframe src="Link.html" width="100%" height="40px" ></iframe>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
