@@ -1,0 +1,261 @@
+<html>
+	<head>
+		<title>详细计算你的年龄</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+		
+		<script LANGUAGE="JavaScript">
+			//是否闰年
+			function leapyear(a) {
+				if (((a%4 == 0) && (a%100 != 0)) || (a%400 == 0))
+					return true;
+				else
+					return false;
+			}
+			//求出此日期本年剩余天数
+			function benNianShengYuTians(y, m, d){
+				var solarMonth = new Array(31,28,31,30,31,30,31,31,30,31,30,31);
+				var ds = 0;
+				var isrunnian = leapyear(y);
+				for(var i = 1; i < m; i++){
+					ds = ds + solarMonth[i-1];
+				}
+				ds = ds + d;
+				ds = 365 - ds;
+				if(m == 1){
+					if(isrunnian){ds++;}
+				}
+				if(m == 2 && d < 29){
+					if(isrunnian){ds++;}
+				}
+				return ds;
+			}
+			//求出此日期本年已经过的天数
+			function benNianYiGuoTians(y, m, d){
+				var solarMonth = new Array(31,28,31,30,31,30,31,31,30,31,30,31);
+				var ds = 0;
+				for(var i = 1; i < m; i++){
+					ds = ds + solarMonth[i-1];
+				}
+				ds = ds + d;
+				if(m > 2){
+					if(leapyear(y)){ds++;}
+				}
+				return ds;
+			}
+			
+			function initial() {
+				var solarMonth = new Array(31,28,31,30,31,30,31,31,30,31,30,31);
+				var today = new Date();
+				//当前年月日
+				var td = today.getDate();
+				var tm = today.getMonth()+1;
+				var ty = today.getYear();
+				if (ty < 2000){
+					ty += 1900;
+				}
+				
+				//出生年月日
+				var cd = parseInt(document.agecalc.day.selectedIndex) + 1;
+				var cm = parseInt(document.agecalc.month.selectedIndex) + 1;
+				var cy = document.agecalc.year.value;
+				var yourName = document.agecalc.yourName.value;
+				
+				if (isNaN(cy)) {
+					document.agecalc.timealive.value = "年份请输入数字。";
+					document.agecalc.year.select();
+					document.agecalc.year.focus();
+					return;
+				}else{
+					cy = cy * 1;
+				}
+				if(cy > ty){
+					document.agecalc.timealive.value = "出生日期不能大于当前日期。";
+					document.agecalc.year.select();
+					document.agecalc.year.focus();
+					return;
+				}
+				if(cy == ty){
+					if(cm > tm){
+						document.agecalc.timealive.value = "出生日期不能大于当前日期。";
+						return;
+					}
+					if(cm == tm){
+						if(cd > td){
+							document.agecalc.timealive.value = "出生日期不能大于当前日期。";
+							return;
+						}
+					}
+				}
+				
+				var ds = 0;//出生总天数
+				var dm = 0;//出生总月数
+				var difY = ty - cy - 1;//相差整年数
+				var difCY = benNianShengYuTians(cy, cm, cd);
+				var tYiGuoTians = benNianYiGuoTians(ty, tm, td);
+				if(difY == -1){
+					var difTY = benNianShengYuTians(ty, tm, td);
+					ds = difCY - difTY;
+				} else if(difY == 0){
+					ds = difCY + tYiGuoTians;
+				}else{
+					ds = difCY + tYiGuoTians;
+					for(var i = cy+1; i < ty; i++){
+						ds = ds + 356;
+						if(leapyear(i)){ds++;}
+					}
+				}
+				if(difY == -1){
+					dm = tm - cm;
+					if(td < cd){
+						dm--;
+					}
+				} else if(difY == 0){
+					dm = 12 - cm + tm;
+					if(td < cd){
+						dm--;
+					}
+				}else{
+					dm = 12 - cm + tm;
+					if(td < cd){
+						dm--;
+					}
+					for(var i = cy+1; i < ty; i++){
+						dm = dm + 12;
+					}
+				}
+				document.agecalc.timealive.value = yourName + "已经" + Math.floor(dm/12) + "岁" + dm%12 + "月了!\n\n";
+				document.agecalc.timealive.value += "     或者 " + dm + " 个月\n";
+				document.agecalc.timealive.value += "     或者 " + Math.floor(ds/7)  + " 个星期\n";
+				document.agecalc.timealive.value += "     或者 " + ds + " 天\n";
+				var hour = ds * 24;
+				var min = hour *60;
+				var sec = min *60;
+				document.agecalc.timealive.value += "     或者 " + hour + " 小时\n";
+				document.agecalc.timealive.value += "     或者 " + min + " 分\n";
+				document.agecalc.timealive.value += "     或者 " + sec + " 秒\n";
+			}
+			
+			//日期跳转
+			function pushBtmNew(K) {
+				var myYVo = document.getElementById('MyY');
+				var intY = myYVo.value*1;
+				
+				switch (K){
+					case 'YUU' :
+						myYVo.value = intY + 5;
+						break;
+					case 'YU' :
+						myYVo.value = intY + 1;
+						break;
+					case 'YD' :
+						myYVo.value = intY - 1;
+						break;
+					case 'YDD' :
+						myYVo.value = intY - 5;
+						break;
+					default :
+						myYVo.value = 2012;
+				}
+				initial();
+			}
+		</script>
+		<style>
+			body {
+				padding-top: 5px;
+			}
+			
+			#startBut, #snapshotBut, #resetBut {
+				font-size: 14px;
+				vertical-align: middle;
+				text-align: center;
+				font-weight: bold;
+				color: #0CC;
+				cursor:hand;
+			}
+		</style>
+	</head>
+	
+	<body onload=initial()>
+		<table border=5 bordercolor=#0CC borderlight=green>
+			<tr><td align=center><font size=5 color=red face="Arial, Helvetica, sans-serif"><strong>详细计算你的年龄</strong></font></td></tr>
+			<tr>
+				<td align=center height=80 width=400>
+					<form name=agecalc>
+						<table>
+							<tr>
+								<td align=center>
+									姓名：
+									<input type=text name=yourName size=4 maxlength=4 value="谢嘉豪">&nbsp;&nbsp;
+									生日:  
+									<input type=button value="&lt;&lt;" onclick="javascript: pushBtmNew('YDD');" style="cursor:hand">
+									<input type=button value="&lt;" onclick="javascript: pushBtmNew('YD');" style="cursor:hand">
+									<input type=text id=MyY name=year size=4 maxlength=4 value="2012">年
+									<input type=button value="&gt;" onclick="javascript: pushBtmNew('YU');" style="cursor:hand">
+									<input type=button value="&gt;&gt;" onclick="javascript: pushBtmNew('YUU');" style="cursor:hand">
+									<select name=month size=1 onchange=initial()>
+										<option>1
+										<option>2
+										<option>3
+										<option>4
+										<option>5
+										<option>6
+										<option>7
+										<option>8
+										<option selected="true">9
+										<option>10
+										<option>11
+										<option>12
+									</select>
+									月
+									<select name=day size=1 onchange=initial()>
+										<option>1
+										<option>2
+										<option>3
+										<option>4
+										<option>5
+										<option>6
+										<option>7
+										<option>8
+										<option>9
+										<option selected="true">10
+										<option>11
+										<option>12
+										<option>13
+										<option>14
+										<option>15
+										<option>16
+										<option>17
+										<option>18
+										<option>19
+										<option>20
+										<option>21
+										<option>22
+										<option>23
+										<option>24
+										<option>25
+										<option>26
+										<option>27
+										<option>28
+										<option>29
+										<option>30
+										<option>31
+									</select>
+									日&nbsp;&nbsp;&nbsp;
+									<input type=button id="startBut" name=start value="计算" onclick="initial();">
+									<br><br>
+									<textarea rows=20 cols=60 name=timealive value="" style="background-color:#000000; color:53FF53; font-size: 22px;"></textarea>
+								</td>
+							</tr>
+						</table>
+					</form>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<iframe src="Link.html" width="100%" height="40px" ></iframe>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
