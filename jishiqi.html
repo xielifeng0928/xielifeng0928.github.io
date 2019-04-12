@@ -1,0 +1,193 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+		<title>记时器</title>		
+		<script LANGUAGE="JavaScript">
+			var total = 0;//总秒数
+			var totalHis = 0;//总秒数
+			
+			var isStart = false;//是否开始
+			var h0 = 0; //时
+			var minute0 = 0; //分
+			var s0 = 0; //秒
+			
+			var order = 0;//序号
+			
+			//开始
+			function start(){
+				//如果开始中，则暂停
+				if(isStart){
+					document.getElementById('startBut').value = ' 开始 ';
+					isStart = false;
+					println('暂停');
+				}else{
+					//如果暂停中，则开始
+					document.getElementById('startBut').value = ' 暂停 ';
+					isStart = true;
+					if(total == 0){
+						document.agecalc.timealive.value = '';
+					}
+					println('开始');
+				}
+			}
+			
+			//快照
+			function snapshot(){
+				if(isStart){
+					println('快照');
+				}
+			}
+			
+			//重置
+			function resest1(){
+				document.getElementById('startBut').value = ' 开始 ';
+				isStart = false;
+				total = 0;
+				totalHis = 0;
+				document.agecalc.timing.value = '00:00:00';
+				order = 0;
+				document.agecalc.timealive.value = '';
+				h0 = 0; //时
+				minute0 = 0; //分
+				s0 = 0; //秒
+			}
+			
+			//打印显示
+			function println(type){
+				order++;
+				var timeStr = order + ' ' + type + ':' + getTimeStr(h0, minute0, s0) + '  ' + new Date().toLocaleString();
+				
+				if(document.agecalc.timealive.value != ''){//如果已经有记录
+					var h2 = 0; //时
+					var minute2 = 0; //分
+					var s2 = 0; //秒
+					
+					var t = total - totalHis;//总时差（秒）
+					h2 = parseInt(t / 3600);
+					minute2 = parseInt((t-3600*h2) / 60);
+					s2 = t % 60;
+					timeStr = timeStr + '  ' + getTimeStr(h2, minute2, s2);
+				}
+				
+				timeStr = timeStr + '\n';
+				document.agecalc.timealive.value = document.agecalc.timealive.value + timeStr;
+
+				//记录当前时间成为历史记录
+				totalHis = total;
+			}
+			
+			setInterval("timing()", 1000);//1秒刷新一次
+			
+			//刷新时钟显示
+			function timing(){
+				if(isStart){//如果开始
+					//加1秒
+					s0 = s0 + 1;
+					if(s0 == 60){
+						s0 = 0;
+						minute0 = minute0 + 1;
+						if(minute0 == 60){
+							minute0 = 0;
+							h0 = h0 + 1;
+						}
+					}
+					document.agecalc.timing.value = getTimeStr(h0, minute0, s0);
+				}
+				total++;
+				Clock.innerHTML = new Date().toLocaleString().replace(/(年|月)/g, "/").replace(/日/, "");
+			}
+			
+			//获得时间字符串
+			function getTimeStr(h, minute, s){
+				var hStr = ''; //时
+				var minuteStr = ''; //分
+				var sStr = ''; //秒
+				
+				if(h < 10){
+					hStr = '0' + h; 
+				}else{
+					hStr = h; 
+				}
+				
+				if(minute < 10){
+					minuteStr = '0' + minute; 
+				}else{
+					minuteStr = minute; 
+				}
+				
+				if(s < 10){
+					sStr = '0' + s; 
+				}else{
+					sStr = s; 
+				}
+				return hStr + ':' + minuteStr + ':' + sStr;
+			}
+		</script>
+		<style>
+			body {
+				padding-top: 5px;
+			}
+			
+			#timing {
+				font-size: 28px;
+				vertical-align: middle;
+				text-align: center;
+				background-color: #000;
+				color: red;
+				font-weight: 900;
+				border: 0 none;
+			}
+			
+			#startBut, #snapshotBut, #resetBut {
+				font-size: 22px;
+				vertical-align: middle;
+				text-align: center;
+				font-weight: bold;
+				color: #0CC;
+				cursor:hand;
+			}
+		</style>
+	</head>
+
+	<body onload=resest1()>
+		<table border=5 bordercolor=#0CC>
+			<tr>
+				<td align=center>
+					<img src="img/miaobiao.jpg" style="height:80;">
+					<font size=5 color=red face="Arial, Helvetica, sans-serif"><strong>记时器</strong></font>
+				</td>
+			</tr>
+			
+			<tr>
+				<td align=center height=80 width=400>
+					<form name=agecalc>
+						<table>
+							<tr>
+								<td align=left>
+									<FONT id=Clock face=Arial color=#0CC size=5 align="center">0000/00/00 上午00:00:00</FONT>
+									<br>
+									<input type="text" name="timing" id="timing" size="10" value="00:00:00">
+									<input type="button" value=" 开始 " id="startBut" onclick="javascript: start();">
+									<input type="button" value=" 快照 " id="snapshotBut" onclick="javascript: snapshot();">
+									<input type="button" value=" 重置 " id="resetBut" onclick="javascript: resest1();"><br><br>
+								</td>
+							</tr>
+							<tr>
+								<td align=left>
+									<textarea rows=20 cols=60 name=timealive value="" style="background-color:#000000; color:53FF53; font-size: 22px;">
+									</textarea>
+								</td>
+							</tr>
+						</table>
+					</form>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<iframe src="Link.html" width="100%" height="40px" ></iframe>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
