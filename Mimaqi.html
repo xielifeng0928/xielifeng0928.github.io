@@ -1,0 +1,355 @@
+<html>
+	<head>
+		<META HTTP-EQUIV="Expires" CONTENT="0">
+		<meta http-equiv="Content-Type" content="text/html; charset=GBK">
+		<title>密码风险管理系统</title>
+		<style>
+			#But1, #But2 {
+				font-size: 14px;
+				vertical-align: middle;
+				text-align: center;
+				color: #0CC;
+				font-weight: bold;
+				cursor:hand;
+			}
+		</style>
+		
+		<script language=JavaScript>
+			/**
+			 * 模块名称： 
+			 * @param   
+			 * @date    2008-10-01  星期三
+			 * @author  谢立峰
+			 * 特别说明： 为庆祝而做 
+			 */
+			 
+			/**
+			 * 函数功能： 加密
+			 * @param  
+			 * @date    2008-10-01  星期三
+			 * @return  
+			 * 特别说明： 
+			 */
+			function toNewCode(){
+				var oldCode = document.getElementById("oldCode").value;
+				var key = document.getElementById("key").value;
+				if(key == ""){
+					alert("请输入钥匙！");
+					document.getElementById("key").select();
+					return false;
+				}
+				var arr = key.match(/^\d+$/);   
+				if(arr == null){
+					alert("钥匙只能是数字!");
+					document.getElementById("key").select();
+					return false;
+				}
+
+
+				if(oldCode == ""){
+					alert("请输入要加密码的密码！");
+					document.getElementById("oldCode").select();
+					return false;
+				}
+				var arr = oldCode.match(/^\d+$/);   
+				if(arr == null){
+					alert("要加密码只能是数字!");
+					document.getElementById("oldCode").select();
+					return false;
+				}
+				if(oldCode.length > 9999){
+					alert("要加密码的长度不能大于9999!");
+					document.getElementById("oldCode").select();
+					return false;
+				}
+				var code = new Code(oldCode, "", key);
+				code.toNewCode();
+				document.getElementById("newCode").value = code.newCode;
+				document.getElementById("newCode").select();
+			}
+
+			/**
+			 * 函数功能： 解密
+			 * @param  
+			 * @date    2008-10-01  星期三
+			 * @return  
+			 * 特别说明： 
+			 */
+			function toOldCode(){
+				var newCode = document.getElementById("newCode").value;
+				var key = document.getElementById("key").value;
+				if(key == ""){
+					alert("请输入钥匙！");
+					document.getElementById("key").select();
+					return false;
+				}
+				var arr = key.match(/^\d+$/);   
+				if(arr == null){
+					alert("钥匙只能是数字!");
+					document.getElementById("key").select();
+					return false;
+				}
+				if(newCode == ""){
+					alert("请输入要解密码的密码！");
+					document.getElementById("newCode").select();
+					return false;
+				}
+				var arr = newCode.match(/^\d+$/);   
+				if(arr == null){
+					alert("要解密码只能是数字!");
+					document.getElementById("newCode").select();
+					return false;
+				}
+				var code = new Code("", newCode, key);
+				code.toOldCode();
+				document.getElementById("oldCode").value = code.oldCode;
+				document.getElementById("oldCode").select();
+			}
+		</script>
+	</head>
+	<body>
+		<table border=5 bordercolor=#0CC>
+			<tr>
+				<td align=center colspan="3">
+					<font size=5 color=red face="Arial, Helvetica, sans-serif"><strong>密码风险管理系统</strong></font>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="3">
+					钥匙:<br/>
+					<textarea id="key" rows="2" cols="20" style="background-color:#000000; color:53FF53; font-size:22px;"></textarea>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					原密码:<br/>
+					<textarea id="oldCode" rows="2" cols="25" style="background-color:#000000; color:53FF53; font-size:22px;"></textarea>
+				</td>
+				<td rows="2">
+					<INPUT TYPE=Button id="But1" Value="加密>>|加密" Align=left onclick="javascript: toNewCode();"><br/><br/>
+					<INPUT TYPE=Button id="But2" Value="解密|<<解密" Align=left onclick="javascript: toOldCode();">
+				</td>
+				<td>
+					加密后的密码:<br/>
+					<textarea id="newCode" rows="2" cols="43" style="background-color:#000000; color:53FF53; font-size:22px;"></textarea>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="3">
+					<iframe src="Link.html" width="100%" height="40px" ></iframe>
+				</td>
+			</tr>
+		</table>
+		<script language=JavaScript>
+			/**
+			 * 模块名称： Code密码类
+			 * @param   
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * 特别说明：为庆祝而做 
+			 */
+			 
+			/**
+			 * 函数功能： 构造函数
+			 * @param   Code
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 */
+			Code = function(oldCode, newCode, selfCode){
+				this.oldCode = oldCode;
+				this.newCode = newCode;
+				this.selfCode = selfCode;
+			};
+
+			/**
+			 * 函数功能： 给新的密码添加 times 个随机数
+			 * @param   
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 * 
+			 */
+			Code.prototype.addStochasticNums = function(newCode, times){
+				for(var i = 0; i < times; i++){
+					//产生一个0~9的随机数
+					var numberStr = (Math.random()*100 + ""); 
+					numberStr = numberStr.substring(0, 1);
+
+					newCode += numberStr;
+				}
+				return newCode;
+			}
+
+
+			/**
+			 * 函数功能： 加密
+			 * @param   Code
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 * 123456  -> 654321
+			 * 
+			 */
+			Code.prototype.toNewCode = function(){
+				var oldCodeTemp = this.oldCode;
+				var selfCode = this.selfCode;
+
+				var newCodeTemp = oldCodeTemp.length + ""; //先把密码的长度给记下来放到第一位
+				for(var i = 0; i < 6 - newCodeTemp.length; i++){//支持密码最长为 9999
+					newCodeTemp = "0" + newCodeTemp;
+				}
+				var times = 0;
+				for(var i = 0; i < selfCode.length; i++){
+					times += (selfCode.substring(i, (i+1))*1);
+				}
+				newCodeTemp = this.addStochasticNums(newCodeTemp, times);
+
+				var codeCodeLen = 0;
+				for(var i = 0; i < oldCodeTemp.length; i++){
+					var num = (oldCodeTemp.substring(i, (i+1))*1);
+					var otherNum = (selfCode.substring(codeCodeLen, (codeCodeLen+1))*1);
+					newCodeTemp += this.addOne(num, otherNum);
+					//alert("加密 num = " + num + "; code = " + otherNum + "; " + this.addOne(num, otherNum) + "; newCodeTemp = " +newCodeTemp);
+					times = 0;
+					times = (selfCode.substring(codeCodeLen, (codeCodeLen+1))*1);
+					newCodeTemp = this.addStochasticNums(newCodeTemp, times);//添加 times 个随机数
+					//处理密码的密码的序号
+					codeCodeLen++;
+					if(codeCodeLen >= this.selfCode.length){
+						codeCodeLen = 0;
+					}
+				}
+
+				this.newCode = newCodeTemp;//把生成的新密码赋值给对象
+			}
+
+			/**
+			 * 函数功能： 解密
+			 * @param   Code
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 */
+			Code.prototype.toOldCode = function(){
+				var newCodeTemp = this.newCode;
+				var selfCode = this.selfCode;
+				var oldCodeLen = newCodeTemp.substring(0, 4)*1;
+
+				var oldCodeTemp = "";
+				var times = 0;
+				for(var i = 0; i < selfCode.length; i++){
+					times += (selfCode.substring(i, (i+1))*1);
+				}
+				newCodeTemp = newCodeTemp.substring((times+4), newCodeTemp.length);
+				//alert("解密");
+				//alert(newCodeTemp + "  " + this.newCode + " || " + times);
+
+				var codeCodeLen = 0;
+				
+				for(var i = 0; i < oldCodeLen; i++){
+					var num = (newCodeTemp.substring(0, 1)*1);
+					var otherNum = (selfCode.substring(codeCodeLen, (codeCodeLen+1))*1);
+					oldCodeTemp += this.minusOne(num, otherNum);
+					//alert("解密 num = " + num + "; code = " + otherNum + "; " + this.minusOne(num, otherNum) + "; oldCodeTemp = " +oldCodeTemp);
+					times = 0;
+					times = (selfCode.substring(codeCodeLen, (codeCodeLen+1))*1);
+					newCodeTemp = newCodeTemp.substring((times+1), newCodeTemp.length);//截去一个加密数及加密时加的那 times 个随机数
+					//处理密码的密码的序号
+					codeCodeLen++;
+					if(codeCodeLen >= this.selfCode.length){
+						codeCodeLen = 0;
+					}
+				}
+
+				this.oldCode = oldCodeTemp;//把生成的新密码赋值给对象
+
+
+			}
+
+			/**
+			 * 函数功能： 数字加1
+			 * @param   num
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 * 
+			 */
+			Code.prototype.addOne = function(num, times){
+				for(var i = 0; i < times; i++){
+					num++;
+					if(num == 10){
+						num = 0;
+					}
+				}
+				return num;
+			}
+
+			/**
+			 * 函数功能： 数字减1
+			 * @param   num
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 * 
+			 */
+			Code.prototype.minusOne = function(num, times){
+				for(var i = 0; i < times; i++){
+					num--;
+					if(num == -1){
+						num = 9;
+					}
+				}
+				return num;
+			}
+
+			/**
+			 * 函数功能： 设置原密码
+			 * @param   
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 * 
+			 */
+			Code.prototype.setOldCode = function(oldCode){
+				this.oldCode = oldCode;
+			}
+
+			/**
+			 * 函数功能： 设置加密后密码
+			 * @param   num
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 * 
+			 */
+			Code.prototype.setNewCode = function(newCode){
+				this.newCode = newCode;
+			}
+
+			/**
+			 * 函数功能： 设置钥匙
+			 * @param   num
+			 * @date    2008-10-01  星期三
+			 * @author  谢立锋
+			 * @return  
+			 * 特别说明： 
+			 * 
+			 */
+			Code.prototype.setKey = function(key){
+				this.selfCode = key;
+			}
+		</script>
+	</body>
+</html>
